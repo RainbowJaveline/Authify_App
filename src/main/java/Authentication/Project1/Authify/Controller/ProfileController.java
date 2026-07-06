@@ -1,6 +1,7 @@
 package Authentication.Project1.Authify.Controller;
 
 import Authentication.Project1.Authify.Service.AppUserDetailsService;
+import Authentication.Project1.Authify.Service.EmailService;
 import Authentication.Project1.Authify.Service.ProfileImpl;
 import Authentication.Project1.Authify.io.ProfileRequest;
 import Authentication.Project1.Authify.io.ProfileResponse;
@@ -19,12 +20,15 @@ public class ProfileController {
 
     private final ProfileImpl profile;
     private final AppUserDetailsService userDetailsService;
+    private final EmailService emailService;
 
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
     public ProfileResponse registerUser(@Valid @RequestBody ProfileRequest request){
-        return profile.createProfile(request);
+        ProfileResponse response =  profile.createProfile(request);
         //todo : send an welcome email
+        emailService.sendWelcome(response.getEmail(), response.getName());
+        return response;
     }
 
     @GetMapping("/profile")
